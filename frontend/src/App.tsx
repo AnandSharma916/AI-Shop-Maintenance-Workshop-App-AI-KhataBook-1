@@ -264,7 +264,7 @@ function Layout({ children }: { children: React.ReactNode }) {
   });
 
   useEffect(() => {
-    const userStr = localStorage.getItem('user');
+    const userStr = sessionStorage.getItem('user');
     if (userStr) {
       try {
         const user = JSON.parse(userStr);
@@ -297,15 +297,15 @@ function Layout({ children }: { children: React.ReactNode }) {
   }, []);
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
+    sessionStorage.removeItem('token');
+    sessionStorage.removeItem('user');
     navigate('/login');
   };
 
   const handleProfileUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const token = localStorage.getItem('token');
+      const token = sessionStorage.getItem('token');
       const body: any = { name: profileData.name, email: profileData.email };
       if (profileData.password) body.password = profileData.password;
       if (profileData.photo) body.photo = profileData.photo;
@@ -318,7 +318,7 @@ function Layout({ children }: { children: React.ReactNode }) {
       
       if (res.ok) {
         const data = await res.json();
-        if (data.user) localStorage.setItem('user', JSON.stringify(data.user));
+        if (data.user) sessionStorage.setItem('user', JSON.stringify(data.user));
         alert('Profile updated successfully!');
         setShowProfile(false);
       } else {
@@ -548,7 +548,7 @@ function AIAssistantWidget() {
 }
 
 function PrivateRoute({ children }: { children: JSX.Element }) {
-  const token = localStorage.getItem('token');
+  const token = sessionStorage.getItem('token');
   return token ? children : <Navigate to="/login" replace />;
 }
 
