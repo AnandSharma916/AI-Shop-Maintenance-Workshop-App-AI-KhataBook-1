@@ -3,6 +3,8 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import prisma from '../prismaClient';
 
+import { sendOtpEmail } from '../utils/emailService';
+
 const router = Router();
 const JWT_SECRET = process.env.JWT_SECRET || 'shivshakti_super_secret_key';
 
@@ -58,14 +60,14 @@ router.post('/send-otp', async (req, res) => {
     // Store OTP for 10 minutes
     otpStore.set(email, { otp, expiresAt: Date.now() + 10 * 60 * 1000 });
 
-    // Mock sending SMS
-    console.log(`\n==============================================`);
-    console.log(`🚨 MOCK SMS SENT TO ADMIN (9479454314)`);
-    console.log(`Email trying to register: ${email}`);
-    console.log(`OTP Code: ${otp}`);
-    console.log(`==============================================\n`);
+    // Send Real Email OTP
+    const emailSent = await sendOtpEmail(email, otp);
+    
+    if (!emailSent) {
+      return res.status(500).json({ message: 'Failed to send OTP email. Please check server configuration.' });
+    }
 
-    res.json({ message: 'OTP sent successfully to Admin number' });
+    res.json({ message: 'OTP sent successfully to your email' });
   } catch (error) {
     res.status(500).json({ message: 'Failed to send OTP' });
   }
