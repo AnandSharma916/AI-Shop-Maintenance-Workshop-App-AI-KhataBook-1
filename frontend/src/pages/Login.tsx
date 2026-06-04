@@ -115,11 +115,12 @@ export default function Login() {
           loop 
           muted 
           playsInline 
-          className="absolute inset-0 w-full h-full object-cover z-0 opacity-50"
+          className="absolute inset-0 w-full h-full object-cover z-0"
         >
           <source src={bgVideo} type="video/mp4" />
         </video>
-        <div className="absolute inset-0 bg-[#060b14]/70 backdrop-blur-[2px] z-0"></div>
+        {/* Lighter overlay to ensure text is readable but video is very clear */}
+        <div className="absolute inset-0 bg-black/40 z-0"></div>
 
         {/* Subtle Neon Accents */}
         <div className="absolute top-[-20%] left-[-10%] w-[500px] h-[500px] bg-blue-600/20 rounded-full blur-[120px] pointer-events-none z-0"></div>
