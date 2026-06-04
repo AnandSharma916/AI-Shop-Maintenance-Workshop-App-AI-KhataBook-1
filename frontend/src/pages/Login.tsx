@@ -108,7 +108,7 @@ export default function Login() {
       {/* Left Side - Dark Premium Dashboard Preview */}
       <div 
         className="hidden lg:flex w-1/2 relative overflow-hidden bg-cover bg-center" 
-        style={{ backgroundImage: "url('https://images.unsplash.com/photo-1619642751034-765dfdf7c58e?q=80&w=2070&auto=format&fit=crop')" }}
+        style={{ backgroundImage: "url('https://images.unsplash.com/photo-1592860824790-256df85c4906?q=80&w=2070&auto=format&fit=crop')" }}
       >
         <div className="absolute inset-0 bg-[#060b14]/85 backdrop-blur-[2px] z-0"></div>
 
