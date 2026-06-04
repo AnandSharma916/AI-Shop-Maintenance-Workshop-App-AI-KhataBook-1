@@ -217,6 +217,7 @@ function Dashboard() {
   );
 }
 
+import bgVideo from './assets/issmaye_ki_video_banni_h_me.mp4';
 import { LayoutDashboard, PieChart as PieChartIcon, Users, Wrench, BookOpen, MapPin, CreditCard, Truck, Package, LogOut } from 'lucide-react';
 
 function Layout({ children }: { children: React.ReactNode }) {
@@ -331,26 +332,37 @@ function Layout({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="min-h-screen bg-gray-50/50 dark:bg-[#0f172a] text-gray-900 dark:text-gray-100 flex font-sans">
-      <aside className="w-72 bg-white/70 dark:bg-gray-900/70 backdrop-blur-xl border-r border-gray-200/50 dark:border-gray-800/50 hidden md:flex flex-col flex-shrink-0 shadow-2xl z-50">
-        <div className="p-6 pb-2 text-xl font-black bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400 flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center text-white shadow-lg shadow-blue-500/30">
-            <Wrench className="w-5 h-5" />
+      <aside className="w-72 bg-white/70 dark:bg-gray-900/70 backdrop-blur-xl border-r border-gray-200/50 dark:border-gray-800/50 hidden md:flex flex-col flex-shrink-0 shadow-2xl z-50 relative overflow-hidden">
+        <video 
+          autoPlay 
+          loop 
+          muted 
+          playsInline 
+          className="absolute inset-0 w-full h-full object-cover z-0 opacity-50 dark:opacity-20"
+        >
+          <source src={bgVideo} type="video/mp4" />
+        </video>
+        <div className="relative z-10 flex flex-col h-full w-full">
+          <div className="p-6 pb-2 text-xl font-black bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400 flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center text-white shadow-lg shadow-blue-500/30">
+              <Wrench className="w-5 h-5" />
+            </div>
+            <span className="leading-tight">Shiv Shakti<br/><span className="text-sm font-bold text-gray-500 dark:text-gray-400">Auto Parts & Workshop</span></span>
           </div>
-          <span className="leading-tight">Shiv Shakti<br/><span className="text-sm font-bold text-gray-500 dark:text-gray-400">Auto Parts & Workshop</span></span>
-        </div>
-        <nav className="flex-1 p-4 space-y-1.5 overflow-y-auto mt-4 custom-scrollbar">
-          {navItems.map((item) => (
-            <Link key={item.path} to={item.path} className={navLinkClass(item.path)}>
-              <item.icon className="w-5 h-5" />
-              {item.label}
-            </Link>
-          ))}
-        </nav>
-        <div className="p-4 border-t border-gray-200/50 dark:border-gray-800/50 m-2">
-          <button onClick={handleLogout} className="flex items-center gap-3 w-full p-3 text-left text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-xl font-semibold transition-colors">
-            <LogOut className="w-5 h-5" />
-            Logout
-          </button>
+          <nav className="flex-1 p-4 space-y-1.5 overflow-y-auto mt-4 custom-scrollbar">
+            {navItems.map((item) => (
+              <Link key={item.path} to={item.path} className={navLinkClass(item.path)}>
+                <item.icon className="w-5 h-5" />
+                {item.label}
+              </Link>
+            ))}
+          </nav>
+          <div className="p-4 border-t border-gray-200/50 dark:border-gray-800/50 m-2">
+            <button onClick={handleLogout} className="flex items-center gap-3 w-full p-3 text-left text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-xl font-semibold transition-colors">
+              <LogOut className="w-5 h-5" />
+              Logout
+            </button>
+          </div>
         </div>
       </aside>
       
