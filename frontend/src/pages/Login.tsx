@@ -67,7 +67,7 @@ export default function Login() {
     if (res.ok) {
       setShowOtpInput(true);
       setTimer(120);
-      alert('OTP sent to Admin (9479454314). Please enter it below.');
+      alert(`OTP sent to ${email}. Please check your inbox and enter it below.`);
     } else {
       alert(data.message || 'Error sending OTP');
     }

@@ -29,7 +29,7 @@ router.post('/login', async (req, res) => {
     const token = jwt.sign(
       { id: user.id, email: user.email, role: user.role },
       JWT_SECRET,
-      { expiresIn: '24h' }
+      { expiresIn: '30d' }
     );
 
     res.json({
@@ -40,10 +40,6 @@ router.post('/login', async (req, res) => {
     res.status(500).json({ error: 'Internal server error during login' });
   }
 });
-
-// In-memory OTP store (email -> OTP data)
-const otpStore = new Map<string, { otp: string, expiresAt: number }>();
-
 // Send OTP Route
 router.post('/send-otp', async (req, res) => {
   try {
@@ -57,8 +53,13 @@ router.post('/send-otp', async (req, res) => {
     // Generate 6-digit OTP
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
     
-    // Store OTP for 10 minutes
-    otpStore.set(email, { otp, expiresAt: Date.now() + 10 * 60 * 1000 });
+    // Store OTP for 10 minutes in Database
+    const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
+    await prisma.otpRecord.upsert({
+      where: { email },
+      update: { otp, expiresAt },
+      create: { email, otp, expiresAt }
+    });
 
     // Send Real Email OTP
     const emailSent = await sendOtpEmail(email, otp);
@@ -82,13 +83,13 @@ router.post('/register', async (req, res) => {
       return res.status(400).json({ message: 'OTP is required' });
     }
 
-    const storedOtpData = otpStore.get(email);
+    const storedOtpData = await prisma.otpRecord.findUnique({ where: { email } });
     if (!storedOtpData) {
       return res.status(400).json({ message: 'No OTP found or expired. Please request a new one.' });
     }
 
-    if (Date.now() > storedOtpData.expiresAt) {
-      otpStore.delete(email);
+    if (new Date() > storedOtpData.expiresAt) {
+      await prisma.otpRecord.delete({ where: { email } });
       return res.status(400).json({ message: 'OTP has expired' });
     }
 
@@ -114,13 +115,13 @@ router.post('/register', async (req, res) => {
     });
     
     // Clear OTP after successful registration
-    otpStore.delete(email);
+    await prisma.otpRecord.delete({ where: { email } });
 
     // Generate Token
     const token = jwt.sign(
       { id: user.id, email: user.email, role: user.role },
       JWT_SECRET,
-      { expiresIn: '24h' }
+      { expiresIn: '30d' }
     );
 
     res.status(201).json({ 
