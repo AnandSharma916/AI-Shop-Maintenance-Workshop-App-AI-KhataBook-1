@@ -218,7 +218,7 @@ function Dashboard() {
 }
 
 import bgVideo from './assets/issmaye_ki_video_banni_h_me.mp4';
-import { LayoutDashboard, PieChart as PieChartIcon, Users, Wrench, BookOpen, MapPin, CreditCard, Truck, Package, LogOut } from 'lucide-react';
+import { LayoutDashboard, PieChart as PieChartIcon, Users, Wrench, BookOpen, MapPin, CreditCard, Truck, Package, LogOut, Menu } from 'lucide-react';
 
 function Layout({ children }: { children: React.ReactNode }) {
   const location = useLocation();
@@ -245,6 +245,7 @@ function Layout({ children }: { children: React.ReactNode }) {
 
   const [showProfile, setShowProfile] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   
   // Load theme from localStorage or default
   const [darkMode, setDarkMode] = useState(() => {
@@ -332,7 +333,16 @@ function Layout({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="min-h-screen bg-gray-50/50 dark:bg-[#0f172a] text-gray-900 dark:text-gray-100 flex font-sans">
-      <aside className="w-72 bg-white/70 dark:bg-gray-900/70 backdrop-blur-xl border-r border-gray-200/50 dark:border-gray-800/50 hidden md:flex flex-col flex-shrink-0 shadow-2xl z-50 relative overflow-hidden">
+      
+      {/* Mobile Menu Overlay */}
+      {isMobileMenuOpen && (
+        <div 
+          className="md:hidden fixed inset-0 bg-black/60 z-[90] backdrop-blur-sm transition-opacity"
+          onClick={() => setIsMobileMenuOpen(false)}
+        ></div>
+      )}
+
+      <aside className={`fixed inset-y-0 left-0 z-[100] transform ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'} md:relative md:translate-x-0 transition-transform duration-300 ease-in-out w-72 bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl border-r border-gray-200/50 dark:border-gray-800/50 flex flex-col flex-shrink-0 shadow-2xl overflow-hidden`}>
         <video 
           autoPlay 
           loop 
@@ -345,22 +355,32 @@ function Layout({ children }: { children: React.ReactNode }) {
         {/* Subtle overlay to keep text readable without hiding the video */}
         <div className="absolute inset-0 bg-black/30 dark:bg-black/40 z-0"></div>
         <div className="relative z-10 flex flex-col h-full w-full">
-          <div className="p-6 pb-2 text-xl font-black bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400 flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center text-white shadow-lg shadow-blue-500/30">
-              <Wrench className="w-5 h-5" />
+          <div className="p-6 pb-2 text-xl font-black bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400 flex items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center text-white shadow-lg shadow-blue-500/30">
+                <Wrench className="w-5 h-5" />
+              </div>
+              <span className="leading-tight">Shiv Shakti<br/><span className="text-sm font-bold text-gray-200 md:text-gray-500 md:dark:text-gray-400">Auto Parts & Workshop</span></span>
             </div>
-            <span className="leading-tight">Shiv Shakti<br/><span className="text-sm font-bold text-gray-500 dark:text-gray-400">Auto Parts & Workshop</span></span>
+            <button onClick={() => setIsMobileMenuOpen(false)} className="md:hidden p-2 rounded-full hover:bg-black/20 text-white">
+              <X className="w-5 h-5" />
+            </button>
           </div>
           <nav className="flex-1 p-4 space-y-1.5 overflow-y-auto mt-4 custom-scrollbar">
             {navItems.map((item) => (
-              <Link key={item.path} to={item.path} className={navLinkClass(item.path)}>
+              <Link 
+                key={item.path} 
+                to={item.path} 
+                className={navLinkClass(item.path)}
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
                 <item.icon className="w-5 h-5" />
                 {item.label}
               </Link>
             ))}
           </nav>
           <div className="p-4 border-t border-gray-200/50 dark:border-gray-800/50 m-2">
-            <button onClick={handleLogout} className="flex items-center gap-3 w-full p-3 text-left text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-xl font-semibold transition-colors">
+            <button onClick={handleLogout} className="flex items-center gap-3 w-full p-3 text-left text-red-400 hover:text-red-500 md:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-xl font-semibold transition-colors">
               <LogOut className="w-5 h-5" />
               Logout
             </button>
@@ -368,9 +388,14 @@ function Layout({ children }: { children: React.ReactNode }) {
         </div>
       </aside>
       
-      <main className="flex-1 flex flex-col min-w-0 bg-gray-50/50 dark:bg-[#0f172a]">
-        <header className="h-20 bg-white/70 dark:bg-gray-900/70 backdrop-blur-xl border-b border-gray-200/50 dark:border-gray-800/50 flex items-center justify-between px-8 flex-shrink-0 sticky top-0 z-40 shadow-sm">
-          <div className="font-bold text-lg md:hidden">Shiv Shakti</div>
+      <main className="flex-1 flex flex-col min-w-0 bg-gray-50/50 dark:bg-[#0f172a] h-screen overflow-hidden">
+        <header className="h-20 bg-white/70 dark:bg-gray-900/70 backdrop-blur-xl border-b border-gray-200/50 dark:border-gray-800/50 flex items-center justify-between px-4 sm:px-8 flex-shrink-0 sticky top-0 z-40 shadow-sm">
+          <div className="flex items-center gap-3 md:hidden">
+            <button onClick={() => setIsMobileMenuOpen(true)} className="p-2 -ml-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 dark:text-white">
+              <Menu className="w-6 h-6" />
+            </button>
+            <div className="font-bold text-lg dark:text-white">Shiv Shakti</div>
+          </div>
           <div className="hidden md:block"></div>
             <div className="flex items-center space-x-2 sm:space-x-4">
               <div className="relative flex items-center bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg overflow-hidden pr-2 shadow-sm">
@@ -438,7 +463,7 @@ function Layout({ children }: { children: React.ReactNode }) {
           </div>
         </header>
         
-        <div className="flex-1 overflow-auto">
+        <div className="flex-1 overflow-auto p-4 sm:p-6 lg:p-8 custom-scrollbar">
           {children}
         </div>
       </main>
