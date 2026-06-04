@@ -105,23 +105,24 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex w-full">
+    <div className="min-h-screen flex w-full relative">
+      {/* Background Video for all screens */}
+      <video 
+        autoPlay 
+        loop 
+        muted 
+        playsInline 
+        className="absolute inset-0 w-full h-full object-cover z-0"
+      >
+        <source src={bgVideo} type="video/mp4" />
+      </video>
+      {/* Overlay to keep text readable */}
+      <div className="absolute inset-0 bg-black/40 z-0"></div>
+
       {/* Left Side - Dark Premium Dashboard Preview */}
       <div 
-        className="hidden lg:flex w-1/2 relative overflow-hidden bg-[#060b14]" 
+        className="hidden lg:flex w-1/2 relative overflow-hidden" 
       >
-        <video 
-          autoPlay 
-          loop 
-          muted 
-          playsInline 
-          className="absolute inset-0 w-full h-full object-cover z-0"
-        >
-          <source src={bgVideo} type="video/mp4" />
-        </video>
-        {/* Lighter overlay to ensure text is readable but video is very clear */}
-        <div className="absolute inset-0 bg-black/40 z-0"></div>
-
         {/* Subtle Neon Accents */}
         <div className="absolute top-[-20%] left-[-10%] w-[500px] h-[500px] bg-blue-600/20 rounded-full blur-[120px] pointer-events-none z-0"></div>
         <div className="absolute bottom-[-10%] right-[-20%] w-[600px] h-[600px] bg-indigo-600/20 rounded-full blur-[150px] pointer-events-none z-0"></div>
@@ -197,7 +198,7 @@ export default function Login() {
       </div>
 
       {/* Right Side - Login Panel */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center p-8 sm:p-12 lg:p-24 relative overflow-hidden bg-[#0b1120]">
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-8 sm:p-12 lg:p-24 relative overflow-hidden bg-[#0b1120]/80 backdrop-blur-md z-10">
         <div className="absolute top-[-10%] right-[-10%] w-96 h-96 bg-blue-600/20 rounded-full blur-[120px] pointer-events-none"></div>
         <div className="absolute bottom-[-10%] left-[-10%] w-96 h-96 bg-indigo-600/20 rounded-full blur-[120px] pointer-events-none"></div>
 
