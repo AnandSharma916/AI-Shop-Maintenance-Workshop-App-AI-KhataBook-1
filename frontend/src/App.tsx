@@ -247,8 +247,7 @@ function Layout({ children }: { children: React.ReactNode }) {
   
   // Load theme from localStorage or default
   const [darkMode, setDarkMode] = useState(() => {
-    const savedMode = localStorage.getItem('darkMode');
-    return savedMode !== null ? savedMode === 'true' : true;
+    return localStorage.getItem('darkMode') === 'true';
   });
   
   const [themeColor, setThemeColor] = useState(() => {
