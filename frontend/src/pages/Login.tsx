@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Wrench, ShieldCheck, Zap, Instagram, Facebook, Twitter } from 'lucide-react';
+import bgVideo from '../assets/issmaye_ki_video_banni_h_me.mp4';
 
 const Typewriter = ({ texts }: { texts: string[] }) => {
   const [displayText, setDisplayText] = useState('');
@@ -107,10 +108,18 @@ export default function Login() {
     <div className="min-h-screen flex w-full">
       {/* Left Side - Dark Premium Dashboard Preview */}
       <div 
-        className="hidden lg:flex w-1/2 relative overflow-hidden bg-cover bg-center" 
-        style={{ backgroundImage: "url('https://images.unsplash.com/photo-1592860824790-256df85c4906?q=80&w=2070&auto=format&fit=crop')" }}
+        className="hidden lg:flex w-1/2 relative overflow-hidden bg-[#060b14]" 
       >
-        <div className="absolute inset-0 bg-[#060b14]/85 backdrop-blur-[2px] z-0"></div>
+        <video 
+          autoPlay 
+          loop 
+          muted 
+          playsInline 
+          className="absolute inset-0 w-full h-full object-cover z-0 opacity-50"
+        >
+          <source src={bgVideo} type="video/mp4" />
+        </video>
+        <div className="absolute inset-0 bg-[#060b14]/70 backdrop-blur-[2px] z-0"></div>
 
         {/* Subtle Neon Accents */}
         <div className="absolute top-[-20%] left-[-10%] w-[500px] h-[500px] bg-blue-600/20 rounded-full blur-[120px] pointer-events-none z-0"></div>
