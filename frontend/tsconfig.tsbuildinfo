@@ -1,0 +1,1 @@
+{"root":["./src/app.tsx","./src/main.tsx","./src/vite-env.d.ts","./src/pages/customers.tsx","./src/pages/expenses.tsx","./src/pages/inventory.tsx","./src/pages/jobcards.tsx","./src/pages/login.tsx","./src/pages/reports.tsx","./src/pages/suppliers.tsx","./src/pages/udhari.tsx","./src/pages/villages.tsx"],"version":"5.9.3"}
