@@ -4,7 +4,7 @@ import bcrypt from 'bcrypt';
 const prisma = new PrismaClient();
 
 async function main() {
-  const email = 'admin@garage.com';
+  const email = 'anandkpp2023@gmail.com';
   const password = 'password123';
   
   const existingAdmin = await prisma.user.findUnique({ where: { email } });
