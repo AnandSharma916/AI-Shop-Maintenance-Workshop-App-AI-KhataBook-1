@@ -65,7 +65,7 @@ export default function Login() {
     const data = await res.json();
     if (res.ok) {
       setShowOtpInput(true);
-      setTimer(60);
+      setTimer(120);
       alert('OTP sent to Admin (9479454314). Please enter it below.');
     } else {
       alert(data.message || 'Error sending OTP');
@@ -254,7 +254,7 @@ export default function Login() {
                     disabled={timer > 0}
                     className={`font-bold transition-colors ${timer > 0 ? 'text-gray-500 cursor-not-allowed' : 'text-blue-400 hover:text-blue-300'}`}
                   >
-                    {timer > 0 ? `Resend in ${timer}s` : 'Resend OTP'}
+                    {timer > 0 ? `Resend in ${Math.floor(timer / 60)}:${(timer % 60).toString().padStart(2, '0')}` : 'Resend OTP'}
                   </button>
                 </div>
               </motion.div>
