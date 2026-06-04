@@ -16,6 +16,7 @@ import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGri
 import { TrendingUp, TrendingDown, Clock, AlertTriangle, ArrowRight, Activity, Wrench as WrenchIcon, Banknote, ShieldAlert, CheckCircle, Plus } from 'lucide-react';
 
 function Dashboard() {
+  const navigate = useNavigate();
   
   const chartData = [
     { name: 'Mon', revenue: 4000 },
@@ -37,7 +38,7 @@ function Dashboard() {
         </div>
         <div className="flex items-center gap-3">
           <motion.button 
-            onClick={() => alert('📥 Downloading Premium PDF Report...')}
+            onClick={() => navigate('/reports')}
             whileHover={{ scale: 1.03, y: -2 }} 
             whileTap={{ scale: 0.97 }} 
             className="bg-[#161f2e] border border-gray-700/50 text-gray-200 px-5 py-2.5 rounded-xl text-sm font-bold shadow-lg shadow-black/20 hover:bg-[#1d283a] hover:border-gray-500/50 transition-all backdrop-blur-sm"
@@ -45,7 +46,7 @@ function Dashboard() {
             Download Report
           </motion.button>
           <motion.button 
-            onClick={() => window.location.href = '/jobcards'}
+            onClick={() => navigate('/jobcards')}
             whileHover={{ scale: 1.03, y: -2 }} 
             whileTap={{ scale: 0.97 }} 
             className="bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-white px-5 py-2.5 rounded-xl text-sm font-bold shadow-lg shadow-violet-500/30 transition-all flex items-center gap-2 border border-violet-400/30 relative overflow-hidden group"
