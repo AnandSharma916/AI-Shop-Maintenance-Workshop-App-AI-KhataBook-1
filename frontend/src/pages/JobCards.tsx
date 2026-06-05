@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 export default function JobCards() {
   const [jobCards, setJobCards] = useState<any[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState('ALL');
   const [showModal, setShowModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [formData, setFormData] = useState({
@@ -119,10 +120,12 @@ export default function JobCards() {
     document.body.removeChild(link);
   };
 
-  const filteredJobs = jobCards.filter(job => 
-    job.tractorModel?.toLowerCase().includes(searchQuery.toLowerCase()) || 
-    job.customer?.name?.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredJobs = jobCards.filter(job => {
+    const matchesSearch = job.tractorModel?.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                          job.customer?.name?.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesStatus = statusFilter === 'ALL' || job.status === statusFilter;
+    return matchesSearch && matchesStatus;
+  });
 
   return (
     <div className="p-6 max-w-7xl mx-auto space-y-6">
@@ -182,7 +185,11 @@ export default function JobCards() {
               />
             </div>
             <div className="flex gap-2">
-              <select className="border border-gray-300 dark:border-gray-600 rounded-lg p-2.5 bg-white dark:bg-gray-700 dark:text-white outline-none">
+              <select 
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                className="border border-gray-300 dark:border-gray-600 rounded-lg p-2.5 bg-white dark:bg-gray-700 dark:text-white outline-none"
+              >
                 <option value="ALL">All Status</option>
                 <option value="PENDING">Pending</option>
                 <option value="IN_PROGRESS">In Progress</option>
