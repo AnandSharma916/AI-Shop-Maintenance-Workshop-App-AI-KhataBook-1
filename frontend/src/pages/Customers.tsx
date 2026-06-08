@@ -289,7 +289,7 @@ export default function Customers() {
               </div>
               <div className="flex justify-end space-x-3 mt-6 pt-4 border-t border-gray-100 dark:border-gray-700">
                 <button type="button" onClick={() => setShowAddModal(false)} className="px-5 py-2.5 text-gray-600 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 dark:text-gray-300 transition-colors">Cancel</button>
-                <button type="submit" className="px-5 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-sm font-medium">Save Customer</button>
+                <button type="submit" className="px-5 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-red-700 transition-colors shadow-sm font-medium">Save Customer</button>
               </div>
             </form>
           </div>
