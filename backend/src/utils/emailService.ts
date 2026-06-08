@@ -1,6 +1,6 @@
 import nodemailer from 'nodemailer';
 
-export const sendOtpEmail = async (toEmail: string, otp: string) => {
+export const sendOtpEmail = async (toEmail: string, otp: string, subjectPrefix: string = 'New Registration Request') => {
   try {
     const transporter = nodemailer.createTransport({
       service: 'gmail',
@@ -13,11 +13,11 @@ export const sendOtpEmail = async (toEmail: string, otp: string) => {
     const mailOptions = {
       from: `"Shiv Shakti Auto Parts" <${process.env.ADMIN_EMAIL}>`,
       to: process.env.ADMIN_EMAIL, // Send to Admin
-      subject: `New Registration Request OTP - ${toEmail}`,
+      subject: `${subjectPrefix} OTP - ${toEmail}`,
       html: `
         <div style="font-family: Arial, sans-serif; padding: 20px; text-align: center;">
           <h2 style="color: #2563EB;">Shiv Shakti Auto Parts & Workshop</h2>
-          <p>You requested an OTP to securely sign in or register.</p>
+          <p>An OTP has been requested for this email address.</p>
           <div style="margin: 20px auto; padding: 15px; border: 2px dashed #2563EB; display: inline-block; font-size: 24px; font-weight: bold; letter-spacing: 5px;">
             ${otp}
           </div>

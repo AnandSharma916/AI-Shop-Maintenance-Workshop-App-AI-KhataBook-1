@@ -142,3 +142,70 @@ export const updateProfile = async (req: Request, res: Response) => {
     res.status(500).json({ error: 'Failed to update profile' });
   }
 };
+
+export const forgotPassword = async (req: Request, res: Response) => {
+  try {
+    const { email } = req.body;
+    
+    const existingUser = await prisma.user.findUnique({ where: { email } });
+    if (!existingUser) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
+    
+    await prisma.otpRecord.upsert({
+      where: { email },
+      update: { otp, expiresAt },
+      create: { email, otp, expiresAt }
+    });
+
+    const emailSent = await sendOtpEmail(email, otp, 'Password Reset Request');
+    
+    if (!emailSent) {
+      return res.status(500).json({ message: 'Failed to send OTP email.' });
+    }
+
+    res.json({ message: 'OTP sent successfully to admin for verification' });
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to process forgot password request' });
+  }
+};
+
+export const resetPassword = async (req: Request, res: Response) => {
+  try {
+    const { email, otp, newPassword } = req.body;
+
+    if (!email || !otp || !newPassword) {
+      return res.status(400).json({ message: 'Email, OTP, and new password are required' });
+    }
+
+    const storedOtpData = await prisma.otpRecord.findUnique({ where: { email } });
+    if (!storedOtpData) {
+      return res.status(400).json({ message: 'No OTP found or expired. Please request a new one.' });
+    }
+
+    if (new Date() > storedOtpData.expiresAt) {
+      await prisma.otpRecord.delete({ where: { email } });
+      return res.status(400).json({ message: 'OTP has expired' });
+    }
+
+    if (storedOtpData.otp !== otp) {
+      return res.status(400).json({ message: 'Invalid OTP' });
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    
+    await prisma.user.update({
+      where: { email },
+      data: { password: hashedPassword }
+    });
+    
+    await prisma.otpRecord.delete({ where: { email } });
+
+    res.json({ message: 'Password reset successfully' });
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to reset password' });
+  }
+};

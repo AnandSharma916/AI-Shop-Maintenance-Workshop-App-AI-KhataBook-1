@@ -45,6 +45,8 @@ export default function Login() {
   const [otp, setOtp] = useState('');
   const [showOtpInput, setShowOtpInput] = useState(false);
   const [isRegister, setIsRegister] = useState(false);
+  const [isForgotPassword, setIsForgotPassword] = useState(false);
+  const [newPassword, setNewPassword] = useState('');
   const [timer, setTimer] = useState(0);
   const navigate = useNavigate();
 
@@ -75,9 +77,51 @@ export default function Login() {
     }
   };
 
+  const handleSendForgotPasswordOtp = async () => {
+    const url = `${import.meta.env.VITE_API_URL || "http://localhost:5000"}` + '/api/auth/forgot-password';
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email })
+    });
+    const data = await res.json();
+    if (res.ok) {
+      setShowOtpInput(true);
+      setTimer(120);
+      alert(`OTP sent to admin. Please enter the secure code below.`);
+    } else {
+      alert(data.message || 'Error sending OTP');
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
+      if (isForgotPassword) {
+        if (!showOtpInput) {
+          await handleSendForgotPasswordOtp();
+        } else {
+          const url = `${import.meta.env.VITE_API_URL || "http://localhost:5000"}` + '/api/auth/reset-password';
+          const res = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, otp, newPassword })
+          });
+          const data = await res.json();
+          if (res.ok) {
+            alert('Password reset successfully! You can now log in.');
+            setIsForgotPassword(false);
+            setShowOtpInput(false);
+            setOtp('');
+            setNewPassword('');
+            setPassword('');
+          } else {
+            alert(data.message || 'Error resetting password');
+          }
+        }
+        return;
+      }
+
       if (isRegister && !showOtpInput) {
         await handleSendOtp();
       } else {
@@ -203,10 +247,10 @@ export default function Login() {
         >
           <div className="mb-10 text-center lg:text-left">
             <h2 className="text-3xl font-bold text-white tracking-tight">
-              {isRegister ? (showOtpInput ? 'Enter Admin OTP' : 'Create an account') : 'Welcome back'}
+              {isForgotPassword ? (showOtpInput ? 'Reset Password' : 'Forgot Password') : isRegister ? (showOtpInput ? 'Enter Admin OTP' : 'Create an account') : 'Welcome back'}
             </h2>
             <p className="text-gray-400 mt-2">
-              {isRegister ? (showOtpInput ? 'Enter the secure code sent to the admin.' : 'Enter your details to get started.') : 'Please enter your details to sign in.'}
+              {isForgotPassword ? (showOtpInput ? 'Enter OTP and your new password.' : 'Enter your email to request a password reset.') : isRegister ? (showOtpInput ? 'Enter the secure code sent to the admin.' : 'Enter your details to get started.') : 'Please enter your details to sign in.'}
             </p>
           </div>
 
@@ -221,14 +265,16 @@ export default function Login() {
                     value={email} onChange={e => setEmail(e.target.value)} required placeholder="admin@garage.com"
                   />
                 </div>
-                <div className="space-y-1.5">
-                  <label className="text-sm font-semibold text-gray-300">Password</label>
-                  <input 
-                    type="password" 
-                    className="w-full p-3.5 bg-[#131c31] border border-gray-700/50 rounded-xl focus:ring-2 focus:ring-blue-500 text-white outline-none transition-all shadow-inner placeholder-gray-500"
-                    value={password} onChange={e => setPassword(e.target.value)} required placeholder="••••••••"
-                  />
-                </div>
+                {!isForgotPassword && (
+                  <div className="space-y-1.5">
+                    <label className="text-sm font-semibold text-gray-300">Password</label>
+                    <input 
+                      type="password" 
+                      className="w-full p-3.5 bg-[#131c31] border border-gray-700/50 rounded-xl focus:ring-2 focus:ring-blue-500 text-white outline-none transition-all shadow-inner placeholder-gray-500"
+                      value={password} onChange={e => setPassword(e.target.value)} required placeholder="••••••••"
+                    />
+                  </div>
+                )}
               </motion.div>
             ) : (
               <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="space-y-4">
@@ -241,12 +287,22 @@ export default function Login() {
                     value={otp} onChange={e => setOtp(e.target.value.replace(/\D/g, ''))} required placeholder="------"
                   />
                 </div>
+                {isForgotPassword && (
+                  <div className="space-y-1.5 pt-2">
+                    <label className="text-sm font-semibold text-gray-300">New Password</label>
+                    <input 
+                      type="password" 
+                      className="w-full p-3.5 bg-[#131c31] border border-gray-700/50 rounded-xl focus:ring-2 focus:ring-blue-500 text-white outline-none transition-all shadow-inner placeholder-gray-500"
+                      value={newPassword} onChange={e => setNewPassword(e.target.value)} required placeholder="••••••••"
+                    />
+                  </div>
+                )}
                 
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-gray-400">Didn't receive code?</span>
                   <button 
                     type="button" 
-                    onClick={handleSendOtp}
+                    onClick={isForgotPassword ? handleSendForgotPasswordOtp : handleSendOtp}
                     disabled={timer > 0}
                     className={`font-bold transition-colors ${timer > 0 ? 'text-gray-500 cursor-not-allowed' : 'text-blue-400 hover:text-blue-300'}`}
                   >
@@ -256,9 +312,9 @@ export default function Login() {
               </motion.div>
             )}
             
-            {!isRegister && (
+            {!isRegister && !isForgotPassword && (
               <div className="flex justify-end">
-                <a href="#" className="text-sm font-semibold text-blue-400 hover:text-blue-300 transition-colors">Forgot password?</a>
+                <button type="button" onClick={() => { setIsForgotPassword(true); setShowOtpInput(false); }} className="text-sm font-semibold text-blue-400 hover:text-blue-300 transition-colors">Forgot password?</button>
               </div>
             )}
 
@@ -267,21 +323,26 @@ export default function Login() {
               whileTap={{ scale: 0.98 }}
               className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white p-4 rounded-xl font-bold shadow-lg shadow-blue-500/25 transition-all text-lg mt-4 border border-blue-500/50 flex items-center justify-center gap-2"
             >
-              {isRegister ? (showOtpInput ? 'Verify & Secure Registration' : 'Request OTP') : 'Sign In'}
+              {isForgotPassword ? (showOtpInput ? 'Reset Password' : 'Request OTP') : isRegister ? (showOtpInput ? 'Verify & Secure Registration' : 'Request OTP') : 'Sign In'}
             </motion.button>
           </form>
 
           <p className="mt-8 text-center text-sm font-medium text-gray-400">
-            {isRegister ? 'Already have an account?' : "Don't have an account?"}{' '}
+            {isForgotPassword ? 'Remembered your password?' : isRegister ? 'Already have an account?' : "Don't have an account?"}{' '}
             <button 
+              type="button"
               onClick={() => {
-                setIsRegister(!isRegister);
+                if (isForgotPassword) {
+                  setIsForgotPassword(false);
+                } else {
+                  setIsRegister(!isRegister);
+                }
                 setShowOtpInput(false);
                 setTimer(0);
               }} 
               className="text-blue-400 font-bold hover:text-blue-300 transition-colors hover:underline"
             >
-              {isRegister ? 'Log in' : 'Sign up'}
+              {isForgotPassword ? 'Log in' : isRegister ? 'Log in' : 'Sign up'}
             </button>
           </p>
         </motion.div>
