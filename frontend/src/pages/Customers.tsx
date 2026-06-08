@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
-
-interface Customer {
-  id: string;
-  name: string;
-  phone: string;
-  address: string | null;
-  createdAt: string;
+import { customerService, Customer } from '../services/customerService';
+interface JobCard { id: string; tractorModel: string; issue: string; status: string; totalCost: number; createdAt: string; }
+interface Udhari { id: string; description: string; type: string; amount: number; createdAt: string; }
+interface Document { id: string; title: string; photoUrl: string; }
+interface CustomerProfile extends Customer {
+  JobCards?: JobCard[];
+  Udhari?: Udhari[];
+  Documents?: Document[];
 }
 
 export default function Customers() {
@@ -20,23 +21,22 @@ export default function Customers() {
   
   // Profile Modal State
   const [selectedCustomerId, setSelectedCustomerId] = useState<string | null>(null);
-  const [customerProfile, setCustomerProfile] = useState<any>(null);
+  const [customerProfile, setCustomerProfile] = useState<CustomerProfile | null>(null);
   const [profileLoading, setProfileLoading] = useState(false);
 
-  const fetchCustomers = () => {
-    fetch(`${import.meta.env.VITE_API_URL || "http://localhost:5000"}` + '/api/customers')
-      .then(res => res.json())
-      .then(data => {
-        if (Array.isArray(data)) setCustomers(data);
-        setLoading(false);
-      })
-      .catch(err => {
-        console.error('Failed to fetch customers', err);
-        setLoading(false);
-      });
+  const fetchCustomers = async () => {
+    try {
+      const data = await customerService.getAll();
+      if (Array.isArray(data)) setCustomers(data);
+      setLoading(false);
+    } catch (err) {
+      console.error('Failed to fetch customers', err);
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchCustomers();
   }, []);
 
@@ -44,8 +44,7 @@ export default function Customers() {
     setSelectedCustomerId(id);
     setProfileLoading(true);
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL || "http://localhost:5000"}` + `/api/customers/${id}`);
-      const data = await res.json();
+      const data = await customerService.getById(id);
       setCustomerProfile(data);
     } catch (err) {
       console.error(err);
@@ -64,12 +63,12 @@ export default function Customers() {
       const reader = new FileReader();
       reader.onloadend = async () => {
         const title = prompt('Enter document title (e.g. Tractor RC, Bill Photo):') || 'Document';
-        await fetch(`${import.meta.env.VITE_API_URL || "http://localhost:5000"}` + `/api/customers/${selectedCustomerId}/documents`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ title, photoUrl: reader.result })
-        });
-        openProfile(selectedCustomerId);
+        try {
+          await customerService.uploadDocument(selectedCustomerId, title, reader.result);
+          openProfile(selectedCustomerId);
+        } catch {
+          alert('Failed to upload document');
+        }
       };
       reader.readAsDataURL(file);
     }
@@ -77,8 +76,12 @@ export default function Customers() {
 
   const handleDeleteDocument = async (docId: string) => {
     if (confirm('Delete this document?')) {
-      await fetch(`${import.meta.env.VITE_API_URL || "http://localhost:5000"}` + `/api/customers/documents/${docId}`, { method: 'DELETE' });
-      if (selectedCustomerId) openProfile(selectedCustomerId);
+      try {
+        await customerService.deleteDocument(docId);
+        if (selectedCustomerId) openProfile(selectedCustomerId);
+      } catch {
+        alert('Failed to delete document');
+      }
     }
   };
 
@@ -95,52 +98,37 @@ export default function Customers() {
   const handleAddSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL || "http://localhost:5000"}` + '/api/customers', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: formData.name, phone: formData.phone, address: formData.address })
-      });
-      if (res.ok) {
-        setShowAddModal(false);
-        setFormData({ id: '', name: '', phone: '', address: '' });
-        fetchCustomers();
-      }
+      await customerService.create({ name: formData.name, phone: formData.phone, address: formData.address });
+      setShowAddModal(false);
+      setFormData({ id: '', name: '', phone: '', address: '' });
+      fetchCustomers();
     } catch (err) {
       console.error('Failed to add customer', err);
+      alert('Failed to add customer');
     }
   };
 
   const handleEditSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL || "http://localhost:5000"}` + `/api/customers/${formData.id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: formData.name, phone: formData.phone, address: formData.address })
-      });
-      if (res.ok) {
-        setShowEditModal(false);
-        setFormData({ id: '', name: '', phone: '', address: '' });
-        fetchCustomers();
-      }
+      await customerService.update(formData.id, { name: formData.name, phone: formData.phone, address: formData.address });
+      setShowEditModal(false);
+      setFormData({ id: '', name: '', phone: '', address: '' });
+      fetchCustomers();
     } catch (err) {
       console.error('Failed to edit customer', err);
+      alert('Failed to update customer');
     }
   };
 
   const handleDelete = async (id: string) => {
     if (window.confirm("Are you sure you want to delete this customer? This will also delete all their Job Cards and Udhari records permanently.")) {
       try {
-        const res = await fetch(`${import.meta.env.VITE_API_URL || "http://localhost:5000"}` + `/api/customers/${id}`, {
-          method: 'DELETE'
-        });
-        if (res.ok) {
-          fetchCustomers();
-        } else {
-          alert('Failed to delete customer');
-        }
+        await customerService.delete(id);
+        fetchCustomers();
       } catch (err) {
         console.error('Failed to delete customer', err);
+        alert('Failed to delete customer');
       }
     }
   };
@@ -394,7 +382,7 @@ export default function Customers() {
                       {customerProfile.JobCards?.length === 0 ? (
                         <p className="text-sm text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">No job cards found for this customer.</p>
                       ) : (
-                        customerProfile.JobCards?.map((job: any) => (
+                        customerProfile.JobCards?.map((job: JobCard) => (
                           <div key={job.id} className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 bg-white dark:bg-gray-800 shadow-sm">
                             <div className="flex justify-between items-start mb-2">
                               <div>
@@ -422,8 +410,8 @@ export default function Customers() {
                         📓 Udhari Khata
                       </h3>
                       {(() => {
-                        const totalCredit = customerProfile.Udhari?.filter((i:any) => i.type === 'CREDIT').reduce((sum:number, i:any) => sum + i.amount, 0) || 0;
-                        const totalPayment = customerProfile.Udhari?.filter((i:any) => i.type === 'PAYMENT').reduce((sum:number, i:any) => sum + i.amount, 0) || 0;
+                        const totalCredit = customerProfile.Udhari?.filter((i: Udhari) => i.type === 'CREDIT').reduce((sum:number, i: Udhari) => sum + i.amount, 0) || 0;
+                        const totalPayment = customerProfile.Udhari?.filter((i: Udhari) => i.type === 'PAYMENT').reduce((sum:number, i: Udhari) => sum + i.amount, 0) || 0;
                         const pending = totalCredit - totalPayment;
                         return (
                           <span className={`px-3 py-1 rounded-full text-sm font-bold ${pending > 0 ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`}>
@@ -436,7 +424,7 @@ export default function Customers() {
                       {customerProfile.Udhari?.length === 0 ? (
                         <p className="text-sm text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">No transactions recorded.</p>
                       ) : (
-                        customerProfile.Udhari?.map((txn: any) => (
+                        customerProfile.Udhari?.map((txn: Udhari) => (
                           <div key={txn.id} className="border border-gray-200 dark:border-gray-700 rounded-lg p-3 flex justify-between items-center bg-white dark:bg-gray-800 shadow-sm">
                             <div>
                               <p className="font-semibold dark:text-white">{txn.description}</p>
@@ -466,7 +454,7 @@ export default function Customers() {
                   </div>
                   <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
                     {customerProfile.Documents && customerProfile.Documents.length > 0 ? (
-                      customerProfile.Documents.map((doc: any) => (
+                      customerProfile.Documents.map((doc: Document) => (
                         <div key={doc.id} className="relative group rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
                           <img src={doc.photoUrl} alt={doc.title} className="w-full h-24 object-cover cursor-pointer hover:scale-105 transition-transform" onClick={() => window.open(doc.photoUrl)} />
                           <div className="absolute bottom-0 left-0 right-0 bg-black/60 text-white p-1 text-xs truncate text-center">

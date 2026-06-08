@@ -4,8 +4,20 @@ import {
   PieChart, Pie, Cell, AreaChart, Area
 } from 'recharts';
 
+interface ReportData {
+  summary: {
+    totalRevenue: number;
+    totalExpenses: number;
+    netProfit: number;
+    pendingUdhari: number;
+    inventoryCost: number;
+    inventoryValue: number;
+  };
+  expenseByCategory: Record<string, number>;
+}
+
 export default function Reports() {
-  const [data, setData] = useState<any>(null);
+  const [data, setData] = useState<ReportData | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -105,7 +117,7 @@ export default function Reports() {
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#374151" opacity={0.1} />
                 <XAxis dataKey="name" axisLine={false} tickLine={false} />
                 <YAxis axisLine={false} tickLine={false} tickFormatter={(value) => `₹${value}`} />
-                <Tooltip cursor={{fill: 'transparent'}} contentStyle={{borderRadius: '8px'}} formatter={(value: any) => [`₹${value}`, 'Amount']} />
+                <Tooltip cursor={{fill: 'transparent'}} contentStyle={{borderRadius: '8px'}} formatter={(value: unknown) => [`₹${String(value)}`, 'Amount']} />
                 <Bar dataKey="amount" radius={[4, 4, 0, 0]}>
                   {profitData.map((_entry, index) => (
                     <Cell key={`cell-${index}`} fill={index === 0 ? '#10B981' : index === 1 ? '#EF4444' : '#3B82F6'} />
@@ -135,7 +147,7 @@ export default function Reports() {
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                   ))}
                 </Pie>
-                <Tooltip formatter={(value: any) => [`₹${value}`, 'Amount']} contentStyle={{borderRadius: '8px'}} />
+                <Tooltip formatter={(value: unknown) => [`₹${String(value)}`, 'Amount']} contentStyle={{borderRadius: '8px'}} />
                 <Legend verticalAlign="bottom" height={36}/>
               </PieChart>
             </ResponsiveContainer>
@@ -157,7 +169,7 @@ export default function Reports() {
                 <XAxis dataKey="name" axisLine={false} tickLine={false} />
                 <YAxis axisLine={false} tickLine={false} tickFormatter={(value) => `₹${value}`} />
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#374151" opacity={0.1} />
-                <Tooltip formatter={(value: any) => [`₹${value}`, 'Amount']} contentStyle={{borderRadius: '8px'}} />
+                <Tooltip formatter={(value: unknown) => [`₹${String(value)}`, 'Amount']} contentStyle={{borderRadius: '8px'}} />
                 <Area type="monotone" dataKey="value" stroke="#8B5CF6" fillOpacity={1} fill="url(#colorValue)" />
               </AreaChart>
             </ResponsiveContainer>

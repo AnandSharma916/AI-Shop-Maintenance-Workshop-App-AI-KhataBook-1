@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 // import routes
+import { errorHandler } from './middleware/errorHandler';
 
 dotenv.config();
 
@@ -34,6 +35,9 @@ app.use('/api/udhari', udhariRoutes);
 app.use('/api/expenses', expensesRoutes);
 app.use('/api/suppliers', suppliersRoutes);
 app.use('/api/reports', reportsRoutes);
+
+// Global Error Handler
+app.use(errorHandler);
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);

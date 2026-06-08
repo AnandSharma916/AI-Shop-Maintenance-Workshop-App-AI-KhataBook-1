@@ -1,11 +1,45 @@
 import { useState, useEffect } from 'react';
 
+interface Document {
+  id: string;
+  title: string;
+  photoUrl: string;
+}
+
+interface Udhari {
+  id: string;
+  amount: number;
+  type: string;
+  date?: string;
+  createdAt?: string;
+  description: string;
+}
+
+interface JobCard {
+  id: string;
+  tractorModel: string;
+  issue: string;
+  createdAt: string;
+  status: string;
+  totalCost: number;
+}
+
+interface CustomerDetails {
+  id: string;
+  name: string;
+  phone: string;
+  address: string | null;
+  Documents?: Document[];
+  Udhari?: Udhari[];
+  JobCards?: JobCard[];
+}
+
 export default function Villages() {
-  const [customers, setCustomers] = useState<any[]>([]);
+  const [customers, setCustomers] = useState<CustomerDetails[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedVillage, setSelectedVillage] = useState<string | null>(null);
-  const [selectedCustomer, setSelectedCustomer] = useState<any | null>(null);
-  const [customerDetails, setCustomerDetails] = useState<any | null>(null);
+  const [selectedCustomer, setSelectedCustomer] = useState<CustomerDetails | null>(null);
+  const [customerDetails, setCustomerDetails] = useState<CustomerDetails | null>(null);
   const [loadingDetails, setLoadingDetails] = useState(false);
 
   useEffect(() => {
@@ -70,7 +104,7 @@ export default function Villages() {
     window.print();
   };
 
-  const handleSelectCustomer = (customer: any) => {
+  const handleSelectCustomer = (customer: CustomerDetails) => {
     setSelectedCustomer(customer);
     fetchCustomerDetails(customer.id);
   };
@@ -87,7 +121,7 @@ export default function Villages() {
   };
 
   // Group customers by address
-  const villagesMap = customers.reduce((acc: any, customer) => {
+  const villagesMap = customers.reduce((acc: Record<string, CustomerDetails[]>, customer) => {
     const address = customer.address?.trim() || 'Unknown Location';
     if (!acc[address]) acc[address] = [];
     acc[address].push(customer);
@@ -184,11 +218,11 @@ export default function Villages() {
                   <div className="p-4 flex-1 overflow-auto max-h-[400px]">
                     {customerDetails.Udhari && customerDetails.Udhari.length > 0 ? (
                       <div className="space-y-4">
-                        {customerDetails.Udhari.sort((a:any, b:any) => new Date(b.date).getTime() - new Date(a.date).getTime()).map((u: any) => (
+                        {customerDetails.Udhari.sort((a: Udhari, b: Udhari) => new Date(b.date || b.createdAt || '').getTime() - new Date(a.date || a.createdAt || '').getTime()).map((u: Udhari) => (
                           <div key={u.id} className="flex justify-between items-center p-3 border border-gray-100 dark:border-gray-700 rounded-lg">
                             <div>
                               <p className="font-semibold text-gray-900 dark:text-white">{u.description || 'No description'}</p>
-                              <p className="text-xs text-gray-500 dark:text-gray-400">{new Date(u.date || u.createdAt).toLocaleDateString()}</p>
+                              <p className="text-xs text-gray-500 dark:text-gray-400">{new Date(u.date || u.createdAt || '').toLocaleDateString()}</p>
                             </div>
                             <div className="text-right">
                               <p className={`font-bold ${u.type === 'CREDIT' ? 'text-red-600 dark:text-red-400' : 'text-green-600 dark:text-green-400'}`}>
@@ -213,7 +247,7 @@ export default function Villages() {
                   <div className="p-4 flex-1 overflow-auto max-h-[400px]">
                     {customerDetails.JobCards && customerDetails.JobCards.length > 0 ? (
                       <div className="space-y-4">
-                        {customerDetails.JobCards.sort((a:any, b:any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()).map((jc: any) => (
+                        {customerDetails.JobCards.sort((a: JobCard, b: JobCard) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()).map((jc: JobCard) => (
                           <div key={jc.id} className="flex justify-between items-center p-3 border border-gray-100 dark:border-gray-700 rounded-lg">
                             <div>
                               <p className="font-semibold text-gray-900 dark:text-white">{jc.tractorModel}</p>
@@ -248,7 +282,7 @@ export default function Villages() {
                 <div className="p-4">
                   {customerDetails.Documents && customerDetails.Documents.length > 0 ? (
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                      {customerDetails.Documents.map((doc: any) => (
+                      {customerDetails.Documents.map((doc: Document) => (
                         <div key={doc.id} className="relative group rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700">
                           <img src={doc.photoUrl} alt={doc.title} className="w-full h-32 object-cover cursor-pointer hover:scale-105 transition-transform" onClick={() => window.open(doc.photoUrl)} />
                           <div className="absolute bottom-0 left-0 right-0 bg-black/60 text-white p-2 text-xs truncate">
@@ -274,7 +308,7 @@ export default function Villages() {
       {/* VIEW 2: CUSTOMERS IN VILLAGE */}
       {!selectedCustomer && selectedVillage && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-fade-in">
-          {villagesMap[selectedVillage].map((customer: any) => (
+          {villagesMap[selectedVillage].map((customer: CustomerDetails) => (
             <div 
               key={customer.id} 
               onClick={() => handleSelectCustomer(customer)}

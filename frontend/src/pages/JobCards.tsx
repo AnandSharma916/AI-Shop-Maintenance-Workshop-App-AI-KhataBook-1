@@ -1,7 +1,25 @@
 import { useState, useEffect } from 'react';
 
+interface Customer {
+  id: string;
+  name: string;
+  phone: string;
+}
+
+interface JobCard {
+  id: string;
+  tractorModel: string;
+  issue: string;
+  createdAt: string;
+  status: string;
+  totalCost: number;
+  registrationNo?: string;
+  customerId: string;
+  customer?: Customer;
+}
+
 export default function JobCards() {
-  const [jobCards, setJobCards] = useState<any[]>([]);
+  const [jobCards, setJobCards] = useState<JobCard[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('ALL');
   const [showModal, setShowModal] = useState(false);
@@ -17,7 +35,7 @@ export default function JobCards() {
   });
 
   // Invoice State
-  const [selectedInvoice, setSelectedInvoice] = useState<any>(null);
+  const [selectedInvoice, setSelectedInvoice] = useState<JobCard | null>(null);
 
   const fetchJobCards = async () => {
     try {
@@ -30,6 +48,7 @@ export default function JobCards() {
   };
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchJobCards();
   }, []);
 
@@ -89,7 +108,7 @@ export default function JobCards() {
     }
   };
 
-  const handlePrint = (job: any) => {
+  const handlePrint = (job: JobCard) => {
     setSelectedInvoice(job);
     setTimeout(() => {
       window.print();

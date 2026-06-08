@@ -17,7 +17,9 @@ const Typewriter = ({ texts }: { texts: string[] }) => {
     }
 
     if (subIndex === 0 && reverse) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setReverse(false);
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setIndex((prev) => (prev + 1) % texts.length);
       return;
     }
@@ -81,7 +83,7 @@ export default function Login() {
       } else {
         // Step 2: Login or Verify & Register
         const url = isRegister ? `${import.meta.env.VITE_API_URL || "http://localhost:5000"}` + '/api/auth/register' : `${import.meta.env.VITE_API_URL || "http://localhost:5000"}` + '/api/auth/login';
-        const bodyData: any = { email, password };
+        const bodyData: Record<string, string> = { email, password };
         if (isRegister) bodyData.otp = otp;
 
         const res = await fetch(url, {
@@ -98,9 +100,10 @@ export default function Login() {
           alert(data.message || (data.error) || 'Error');
         }
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Login/Register Error:", err);
-      alert('Error connecting to server: ' + err.message);
+      const errorMessage = err instanceof Error ? err.message : String(err);
+      alert('Error connecting to server: ' + errorMessage);
     }
   };
 

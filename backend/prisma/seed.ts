@@ -8,7 +8,7 @@ const tractorModels = ['Mahindra 575 DI', 'Swaraj 744 FE', 'Sonalika DI 745', 'J
 const issues = ['Oil change and general service', 'Brake issue', 'Clutch plate replacement', 'Engine noise', 'Hydraulic lift problem', 'Battery replacement', 'Tyre puncture', 'Alternator issue', 'Fuel pump repair'];
 const statuses = ['PENDING', 'IN_PROGRESS', 'COMPLETED'];
 const inventoryItems = [
-  'Engine Oil 5L', 'Engine Oil 10L', 'Gear Oil 5L', 'Hydraulic Oil 10L', 'Air Filter', 'Oil Filter', 'Fuel Filter', 
+  'Engine Oil 5L', 'Engine Oil 10L', 'Gear Oil 5L', 'Hydraulic Oil 10L', 'Air Filter', 'Oil Filter', 'Fuel Filter',
   'Clutch Plate', 'Pressure Plate', 'Brake Shoes', 'Brake Pads Set', 'Fan Belt', 'Alternator Belt', 'Radiator Coolant',
   'Water Pump', 'Fuel Injector', 'Head Gasket', 'Piston Rings', 'Connecting Rod', 'Main Bearing', 'Battery 12V 100Ah',
   'Headlight Bulb', 'Tail Light Cover', 'Ignition Switch', 'Starter Motor'

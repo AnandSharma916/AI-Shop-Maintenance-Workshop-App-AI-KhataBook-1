@@ -1,9 +1,26 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+
+interface Bill {
+  id: string;
+  amount: number;
+  status: 'PAID' | 'UNPAID';
+  description: string;
+  date: string;
+  photoUrl: string | null;
+}
+
+interface Supplier {
+  id: string;
+  name: string;
+  phone: string;
+  address: string | null;
+  Bills: Bill[];
+}
 
 export default function Suppliers() {
-  const [suppliers, setSuppliers] = useState<any[]>([]);
+  const [suppliers, setSuppliers] = useState<Supplier[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedSupplier, setSelectedSupplier] = useState<any | null>(null);
+  const [selectedSupplier, setSelectedSupplier] = useState<Supplier | null>(null);
   
   // Modals
   const [showAddModal, setShowAddModal] = useState(false);
@@ -13,24 +30,27 @@ export default function Suppliers() {
   const [supplierForm, setSupplierForm] = useState({ name: '', phone: '', address: '' });
   const [billForm, setBillForm] = useState({ amount: '', description: '', photoUrl: '' });
 
-  const fetchSuppliers = () => {
+  const fetchSuppliers = useCallback(() => {
     fetch(`${import.meta.env.VITE_API_URL || "http://localhost:5000"}` + '/api/suppliers')
       .then(res => res.json())
       .then(data => {
         setSuppliers(data);
         // Update selected supplier if it's currently open
-        if (selectedSupplier) {
-          const updated = data.find((s:any) => s.id === selectedSupplier.id);
-          if (updated) setSelectedSupplier(updated);
-        }
+        setSelectedSupplier(prev => {
+          if (prev) {
+            const updated = data.find((s: Supplier) => s.id === prev.id);
+            if (updated) return updated;
+          }
+          return prev;
+        });
         setLoading(false);
       })
       .catch(console.error);
-  };
+  }, []);
 
   useEffect(() => {
     fetchSuppliers();
-  }, []);
+  }, [fetchSuppliers]);
 
   const handleAddSupplier = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -96,7 +116,7 @@ export default function Suppliers() {
         /* SUPPLIER GRID */
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 animate-fade-in-up">
           {suppliers.map(sup => {
-            const totalOwed = sup.Bills.filter((b:any) => b.status === 'UNPAID').reduce((acc:any, b:any) => acc + b.amount, 0);
+            const totalOwed = sup.Bills.filter((b: Bill) => b.status === 'UNPAID').reduce((acc: number, b: Bill) => acc + b.amount, 0);
             return (
               <div 
                 key={sup.id} 
@@ -164,12 +184,12 @@ export default function Suppliers() {
                   No bills uploaded yet.
                 </div>
               ) : (
-                selectedSupplier.Bills.sort((a:any, b:any) => new Date(b.date).getTime() - new Date(a.date).getTime()).map((bill:any) => (
+                selectedSupplier.Bills.sort((a: Bill, b: Bill) => new Date(b.date).getTime() - new Date(a.date).getTime()).map((bill: Bill) => (
                   <div key={bill.id} className="flex gap-4 bg-gray-50 dark:bg-gray-700/30 p-4 rounded-2xl border border-gray-100 dark:border-gray-700 hover:border-pink-300 transition-colors">
                     {/* Bill Photo Thumbnail */}
                     <div className="w-32 h-32 rounded-xl bg-gray-200 dark:bg-gray-800 overflow-hidden flex-shrink-0 flex items-center justify-center shadow-inner">
                       {bill.photoUrl ? (
-                        <img src={bill.photoUrl} alt="Bill" className="w-full h-full object-cover cursor-pointer hover:scale-110 transition-transform duration-500" onClick={() => window.open(bill.photoUrl)} />
+                        <img src={bill.photoUrl} alt="Bill" className="w-full h-full object-cover cursor-pointer hover:scale-110 transition-transform duration-500" onClick={() => bill.photoUrl && window.open(bill.photoUrl)} />
                       ) : (
                         <span className="text-4xl">📄</span>
                       )}

@@ -1,7 +1,23 @@
 import { useState, useEffect } from 'react';
 
+interface Customer {
+  id: string;
+  name: string;
+  phone: string;
+}
+
+interface LedgerItem {
+  id: string;
+  amount: number;
+  type: 'CREDIT' | 'PAYMENT';
+  description: string;
+  createdAt: string;
+  customerId: string;
+  customer?: Customer;
+}
+
 export default function Udhari() {
-  const [ledger, setLedger] = useState<any[]>([]);
+  const [ledger, setLedger] = useState<LedgerItem[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -24,6 +40,7 @@ export default function Udhari() {
   };
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchLedger();
   }, []);
 
@@ -79,7 +96,7 @@ export default function Udhari() {
     }
   };
 
-  const sendWhatsApp = (item: any) => {
+  const sendWhatsApp = (item: LedgerItem) => {
     if (!item.customer?.phone) {
       alert("No phone number available for this customer.");
       return;
