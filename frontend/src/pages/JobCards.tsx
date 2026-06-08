@@ -287,7 +287,7 @@ export default function JobCards() {
                             status: job.status, totalCost: job.totalCost 
                           }); 
                           setShowEditModal(true); 
-                        }} className="text-yellow-600 hover:text-yellow-900 dark:text-yellow-400 font-semibold underline">Edit</button>
+                        }} className="text-orange-600 hover:text-yellow-900 dark:text-yellow-400 font-semibold underline">Edit</button>
                         <button onClick={() => handleDelete(job.id)} className="text-red-600 hover:text-red-900 dark:text-red-400 font-semibold underline">Delete</button>
                       </td>
                     </tr>
