@@ -45,7 +45,7 @@ export const sendOtp = async (req: Request, res: Response) => {
     }
 
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
+    const expiresAt = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes validity
     
     await prisma.otpRecord.upsert({
       where: { email },
@@ -53,7 +53,8 @@ export const sendOtp = async (req: Request, res: Response) => {
       create: { email, otp, expiresAt }
     });
 
-    const emailSent = await sendOtpEmail(email, otp);
+    // Send registration OTP to Admin for manual approval
+    const emailSent = await sendOtpEmail(email, otp, 'New Registration Request', true);
     
     if (!emailSent) {
       return res.status(500).json({ message: 'Failed to send OTP email. Please check server configuration.' });
@@ -67,7 +68,7 @@ export const sendOtp = async (req: Request, res: Response) => {
 
 export const register = async (req: Request, res: Response) => {
   try {
-    const { name, email, password, otp } = req.body;
+    const { name, email, phone, password, otp } = req.body;
     
     if (!otp) return res.status(400).json({ message: 'OTP is required' });
 
@@ -94,6 +95,7 @@ export const register = async (req: Request, res: Response) => {
       data: {
         name: name || email.split('@')[0],
         email,
+        phone,
         password: hashedPassword,
         role: 'ADMIN'
       }

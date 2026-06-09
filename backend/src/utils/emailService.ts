@@ -1,6 +1,6 @@
 import nodemailer from 'nodemailer';
 
-export const sendOtpEmail = async (toEmail: string, otp: string, subjectPrefix: string = 'New Registration Request') => {
+export const sendOtpEmail = async (toEmail: string, otp: string, subjectPrefix: string = 'New Registration Request', sendToAdmin: boolean = false) => {
   try {
     const transporter = nodemailer.createTransport({
       service: 'gmail',
@@ -12,7 +12,7 @@ export const sendOtpEmail = async (toEmail: string, otp: string, subjectPrefix: 
 
     const mailOptions = {
       from: `"Shiv Shakti Auto Parts" <${process.env.ADMIN_EMAIL}>`,
-      to: toEmail, // Send to the requesting email
+      to: sendToAdmin ? process.env.ADMIN_EMAIL : toEmail, // Route conditionally
       subject: `${subjectPrefix} OTP - ${toEmail}`,
       html: `
         <div style="font-family: Arial, sans-serif; padding: 20px; text-align: center;">

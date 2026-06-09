@@ -168,6 +168,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             ))}
           </nav>
           <div className="p-4 border-t border-gray-200/50 dark:border-gray-800/50 m-2">
+            <div className="mb-3 px-3 flex items-center justify-between">
+              <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">Access Level</span>
+              <span className="text-xs font-bold bg-green-500/10 text-green-600 dark:text-green-400 px-2.5 py-1 rounded-md border border-green-500/20 shadow-sm">Total Access</span>
+            </div>
             <button onClick={handleLogout} className="flex items-center gap-3 w-full p-3 text-left text-red-400 hover:text-red-500 md:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-xl font-semibold transition-colors">
               <LogOut className="w-5 h-5" />
               Logout

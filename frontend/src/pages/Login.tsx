@@ -42,6 +42,8 @@ const Typewriter = ({ texts }: { texts: string[] }) => {
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [name, setName] = useState('');
+  const [phone, setPhone] = useState('');
   const [otp, setOtp] = useState('');
   const [showOtpInput, setShowOtpInput] = useState(false);
   const [isRegister, setIsRegister] = useState(false);
@@ -87,8 +89,8 @@ export default function Login() {
     const data = await res.json();
     if (res.ok) {
       setShowOtpInput(true);
-      setTimer(120);
-      alert(`OTP sent to ${email}. Please check your inbox and enter the secure code below.`);
+      setTimer(300); // 5 minutes timer
+      alert(`Registration request sent. Please contact the admin for the OTP and enter it below.`);
     } else {
       alert(data.message || 'Error sending OTP');
     }
@@ -128,7 +130,11 @@ export default function Login() {
         // Step 2: Login or Verify & Register
         const url = isRegister ? `${import.meta.env.VITE_API_URL || "http://localhost:5000"}` + '/api/auth/register' : `${import.meta.env.VITE_API_URL || "http://localhost:5000"}` + '/api/auth/login';
         const bodyData: Record<string, string> = { email, password };
-        if (isRegister) bodyData.otp = otp;
+        if (isRegister) {
+          bodyData.otp = otp;
+          bodyData.name = name;
+          bodyData.phone = phone;
+        }
 
         const res = await fetch(url, {
           method: 'POST',
@@ -262,9 +268,29 @@ export default function Login() {
                   <input 
                     type="email" 
                     className="w-full p-3.5 bg-[#131c31] border border-gray-700/50 rounded-xl focus:ring-2 focus:ring-blue-500 text-white outline-none transition-all shadow-inner placeholder-gray-500"
-                    value={email} onChange={e => setEmail(e.target.value)} required placeholder="admin@garage.com"
+                    value={email} onChange={e => setEmail(e.target.value)} required placeholder="user@garage.com"
                   />
                 </div>
+                {isRegister && !isForgotPassword && (
+                  <>
+                    <div className="space-y-1.5">
+                      <label className="text-sm font-semibold text-gray-300">Full Name</label>
+                      <input 
+                        type="text" 
+                        className="w-full p-3.5 bg-[#131c31] border border-gray-700/50 rounded-xl focus:ring-2 focus:ring-blue-500 text-white outline-none transition-all shadow-inner placeholder-gray-500"
+                        value={name} onChange={e => setName(e.target.value)} required={isRegister} placeholder="John Doe"
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <label className="text-sm font-semibold text-gray-300">Phone Number</label>
+                      <input 
+                        type="tel" 
+                        className="w-full p-3.5 bg-[#131c31] border border-gray-700/50 rounded-xl focus:ring-2 focus:ring-blue-500 text-white outline-none transition-all shadow-inner placeholder-gray-500"
+                        value={phone} onChange={e => setPhone(e.target.value)} required={isRegister} placeholder="+91 9876543210"
+                      />
+                    </div>
+                  </>
+                )}
                 {!isForgotPassword && (
                   <div className="space-y-1.5">
                     <label className="text-sm font-semibold text-gray-300">Password</label>
