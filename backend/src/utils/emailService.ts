@@ -12,7 +12,7 @@ export const sendOtpEmail = async (toEmail: string, otp: string, subjectPrefix: 
 
     const mailOptions = {
       from: `"Shiv Shakti Auto Parts" <${process.env.ADMIN_EMAIL}>`,
-      to: process.env.ADMIN_EMAIL, // Send to Admin
+      to: toEmail, // Send to the requesting email
       subject: `${subjectPrefix} OTP - ${toEmail}`,
       html: `
         <div style="font-family: Arial, sans-serif; padding: 20px; text-align: center;">

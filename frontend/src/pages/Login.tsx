@@ -88,7 +88,7 @@ export default function Login() {
     if (res.ok) {
       setShowOtpInput(true);
       setTimer(120);
-      alert(`OTP sent to admin. Please enter the secure code below.`);
+      alert(`OTP sent to ${email}. Please check your inbox and enter the secure code below.`);
     } else {
       alert(data.message || 'Error sending OTP');
     }
@@ -247,10 +247,10 @@ export default function Login() {
         >
           <div className="mb-10 text-center lg:text-left">
             <h2 className="text-3xl font-bold text-white tracking-tight">
-              {isForgotPassword ? (showOtpInput ? 'Reset Password' : 'Forgot Password') : isRegister ? (showOtpInput ? 'Enter Admin OTP' : 'Create an account') : 'Welcome back'}
+              {isForgotPassword ? (showOtpInput ? 'Reset Password' : 'Forgot Password') : isRegister ? (showOtpInput ? 'Enter OTP' : 'Create an account') : 'Welcome back'}
             </h2>
             <p className="text-gray-400 mt-2">
-              {isForgotPassword ? (showOtpInput ? 'Enter OTP and your new password.' : 'Enter your email to request a password reset.') : isRegister ? (showOtpInput ? 'Enter the secure code sent to the admin.' : 'Enter your details to get started.') : 'Please enter your details to sign in.'}
+              {isForgotPassword ? (showOtpInput ? 'Enter OTP and your new password.' : 'Enter your email to request a password reset.') : isRegister ? (showOtpInput ? 'Enter the secure code sent to your email.' : 'Enter your details to get started.') : 'Please enter your details to sign in.'}
             </p>
           </div>
 
