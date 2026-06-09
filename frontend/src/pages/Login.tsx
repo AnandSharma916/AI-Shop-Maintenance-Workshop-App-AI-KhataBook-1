@@ -90,7 +90,7 @@ export default function Login() {
     if (res.ok) {
       setShowOtpInput(true);
       setTimer(300); // 5 minutes timer
-      alert(`Registration request sent. Please contact the admin for the OTP and enter it below.`);
+      alert(`OTP sent to ${email}. Please check your inbox and enter the secure code below.`);
     } else {
       alert(data.message || 'Error sending OTP');
     }

@@ -45,7 +45,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   
   const [profileData, setProfileData] = useState({
     name: 'Admin',
-    email: 'admin@garage.com',
+    email: 'anandkpp2023@gmail.com',
     password: '',
     photo: ''
   });
