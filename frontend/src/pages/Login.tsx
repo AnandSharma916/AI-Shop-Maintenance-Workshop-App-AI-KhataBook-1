@@ -269,6 +269,7 @@ export default function Login() {
                     type="email" 
                     className="w-full p-3.5 bg-[#131c31] border border-gray-700/50 rounded-xl focus:ring-2 focus:ring-blue-500 text-white outline-none transition-all shadow-inner placeholder-gray-500"
                     value={email} onChange={e => setEmail(e.target.value)} required placeholder="user@garage.com"
+                    autoComplete="email"
                   />
                 </div>
                 {isRegister && !isForgotPassword && (
@@ -298,6 +299,7 @@ export default function Login() {
                       type="password" 
                       className="w-full p-3.5 bg-[#131c31] border border-gray-700/50 rounded-xl focus:ring-2 focus:ring-blue-500 text-white outline-none transition-all shadow-inner placeholder-gray-500"
                       value={password} onChange={e => setPassword(e.target.value)} required placeholder="••••••••"
+                      autoComplete={isRegister ? "new-password" : "current-password"}
                     />
                   </div>
                 )}
@@ -320,6 +322,7 @@ export default function Login() {
                       type="password" 
                       className="w-full p-3.5 bg-[#131c31] border border-gray-700/50 rounded-xl focus:ring-2 focus:ring-blue-500 text-white outline-none transition-all shadow-inner placeholder-gray-500"
                       value={newPassword} onChange={e => setNewPassword(e.target.value)} required placeholder="••••••••"
+                      autoComplete="new-password"
                     />
                   </div>
                 )}
