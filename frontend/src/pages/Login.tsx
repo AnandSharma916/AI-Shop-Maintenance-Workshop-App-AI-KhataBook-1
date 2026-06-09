@@ -72,8 +72,8 @@ export default function Login() {
     const data = await res.json();
     if (res.ok) {
       setShowOtpInput(true);
-      setTimer(120);
-      alert(`OTP sent to ${email}. Please check your inbox and enter it below.`);
+      setTimer(300); // 5 minutes timer
+      alert(`Registration request sent. Please contact the admin for the OTP and enter it below.`);
     } else {
       alert(data.message || 'Error sending OTP');
     }
