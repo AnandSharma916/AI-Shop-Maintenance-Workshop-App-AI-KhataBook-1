@@ -37,7 +37,7 @@ export const login = async (req: Request, res: Response) => {
 
 export const sendOtp = async (req: Request, res: Response) => {
   try {
-    const { email } = req.body;
+    const { email, name, phone } = req.body;
     
     const existingUser = await prisma.user.findUnique({ where: { email } });
     if (existingUser) {
@@ -53,12 +53,8 @@ export const sendOtp = async (req: Request, res: Response) => {
       create: { email, otp, expiresAt }
     });
 
-    // Send registration OTP to Admin for manual approval
-    const emailSent = await sendOtpEmail(email, otp, 'New Registration Request', true);
-    
-    if (!emailSent) {
-      return res.status(500).json({ message: 'Failed to send OTP email. Please check server configuration.' });
-    }
+    // Send registration OTP to Admin for manual approval (non-blocking for speed)
+    sendOtpEmail(email, otp, 'New Registration Request', true, { name, phone, email }).catch(console.error);
 
     res.json({ message: 'OTP sent successfully to your email' });
   } catch (error) {

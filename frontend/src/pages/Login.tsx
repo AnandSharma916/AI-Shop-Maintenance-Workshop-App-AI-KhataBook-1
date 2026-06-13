@@ -67,7 +67,7 @@ export default function Login() {
     const res = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email })
+      body: JSON.stringify({ email, name, phone })
     });
     const data = await res.json();
     if (res.ok) {

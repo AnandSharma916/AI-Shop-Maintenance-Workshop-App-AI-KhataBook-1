@@ -143,12 +143,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         {/* Subtle overlay to keep text readable without hiding the video */}
         <div className="absolute inset-0 bg-black/30 dark:bg-black/40 z-0"></div>
         <div className="relative z-10 flex flex-col h-full w-full">
-          <div className="p-6 pb-2 text-xl font-black bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400 flex items-center justify-between gap-3">
+          <div className="p-6 pb-2 text-xl font-black flex items-center justify-between gap-3">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center text-white shadow-lg shadow-blue-500/30">
-                <Wrench className="w-5 h-5" />
-              </div>
-              <span className="leading-tight">Shiv Shakti<br/><span className="text-sm font-bold text-gray-200 md:text-gray-500 md:dark:text-gray-400">Auto Parts & Workshop</span></span>
+              <img src="/images/bldl_logo.png" alt="BLDL India Logo" className="h-12 w-auto object-contain drop-shadow-md" />
+              <span className="leading-tight bg-clip-text text-transparent bg-gradient-to-r from-amber-700 to-amber-900 dark:from-amber-500 dark:to-amber-700">BLDL INDIA</span>
             </div>
             <button onClick={() => setIsMobileMenuOpen(false)} className="md:hidden p-2 rounded-full hover:bg-black/20 text-white">
               <X className="w-5 h-5" />
@@ -186,7 +184,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <button onClick={() => setIsMobileMenuOpen(true)} className="p-2 -ml-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 dark:text-white">
               <Menu className="w-6 h-6" />
             </button>
-            <div className="font-bold text-lg dark:text-white">Shiv Shakti</div>
+            <div className="flex items-center gap-2">
+              <img src="/images/bldl_logo.png" alt="BLDL India Logo" className="h-8 w-auto object-contain" />
+              <span className="font-bold text-lg bg-clip-text text-transparent bg-gradient-to-r from-amber-700 to-amber-900 dark:from-amber-500 dark:to-amber-700">BLDL INDIA</span>
+            </div>
           </div>
           <div className="hidden md:block"></div>
             <div className="flex items-center space-x-2 sm:space-x-4">
