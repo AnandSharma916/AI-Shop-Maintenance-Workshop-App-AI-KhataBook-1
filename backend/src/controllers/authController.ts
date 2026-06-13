@@ -53,8 +53,8 @@ export const sendOtp = async (req: Request, res: Response) => {
       create: { email, otp, expiresAt }
     });
 
-    // Send registration OTP to Admin for manual approval (non-blocking for speed)
-    sendOtpEmail(email, otp, 'New Registration Request', true, { name, phone, email }).catch(console.error);
+    // Send registration OTP to the user's email
+    sendOtpEmail(email, otp, 'New Registration Request', false, { name, phone, email }).catch(console.error);
 
     res.json({ message: 'OTP sent successfully to your email' });
   } catch (error) {
